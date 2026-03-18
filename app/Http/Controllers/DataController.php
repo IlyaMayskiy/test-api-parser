@@ -56,12 +56,7 @@ class DataController extends Controller
     public function fetchEntity($entity)
     {
         $allowed = ['sales', 'orders', 'stocks', 'incomes'];
-        if (!in_array($entity, $allowed)) {
-            return redirect()->back()->with('error', 'Неизвестная сущность');
-        }
-
         FetchEntityJob::dispatch($entity);
-
         return redirect()->back()->with('message', "{$entity} обновляется...");
     }
 }

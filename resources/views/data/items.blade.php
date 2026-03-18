@@ -5,7 +5,7 @@
 @section('content')
     <div class="d-flex justify-content-between align-items-center mb-3">
         <h1>{{ $title ?? 'Данные' }}</h1>
-        <a href="{{ route('data.fetch.entity', $entity) }}" class="btn btn-outline-primary" onclick="return confirm('Загрузить {{ $entity }}? \nЭто займет время')"> Загрузить {{ $title }}?</a>
+        <a href="{{ route('data.fetch.entity', $entity) }}" class="btn btn-outline-primary" onclick="return confirm('Загрузить {{ $entity }}? \nЭто займет время')"> Обновить {{ $title }}</a>
         <a href="{{ route('data.index') }}" class="btn btn-secondary">На главную</a>
     </div>
 
