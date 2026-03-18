@@ -16,49 +16,30 @@ class DataController extends Controller
         return view('data.index');
     }
 
-    public function sales()
+    public function show($entity)
     {
-        $items = Sale::paginate(20);
-        return view('data.items', [
-            'entity' => 'sales',
-            'title' => 'Продажи',
-            'items' => $items
-        ]);
-    }
+        $map = [
+            'sales'   => ['model' => Sale::class,   'title' => 'Продажи'],
+            'orders'  => ['model' => Order::class,  'title' => 'Заказы'],
+            'stocks'  => ['model' => Stock::class,  'title' => 'Склады'],
+            'incomes' => ['model' => Income::class, 'title' => 'Доходы'],
+        ];
 
-    public function orders()
-    {
-        $items = Order::paginate(20);
-        return view('data.items', [
-            'entity' => 'orders',
-            'title' => 'Заказы',
-            'items' => $items
-        ]);
-    }
+        $modelClass = $map[$entity]['model'];
+        $title = $map[$entity]['title'];
 
-    public function stocks()
-    {
-        $items = Stock::paginate(20);
-        return view('data.items', [
-            'entity' => 'stocks',
-            'title' => 'Склады',
-            'items' => $items
-        ]);
-    }
+        $items = $modelClass::paginate(20);
 
-    public function incomes()
-    {
-        $items = Income::paginate(20);
         return view('data.items', [
-            'entity' => 'incomes',
-            'title' => 'Доходы',
-            'items' => $items
+            'entity' => $entity,
+            'title'  => $title,
+            'items'  => $items,
         ]);
     }
 
     public function fetch()
     {
-        set_time_limit(300);
+        set_time_limit(60);
 
         $baseUri = "http://109.73.206.144:6969/";
         $apiKey = 'E6kUTYrYwZq2tN4QEtyzsbEBk3ie';
@@ -74,7 +55,7 @@ class DataController extends Controller
 
     public function fetchEntity($entity)
     {
-        set_time_limit(300);
+        set_time_limit(60);
 
         $baseUri = "http://109.73.206.144:6969/";
         $apiKey = 'E6kUTYrYwZq2tN4QEtyzsbEBk3ie';
@@ -101,7 +82,7 @@ class DataController extends Controller
     private function fetchEndpoint($baseUri, $apiKey, $endpoint, $modelClass, $useDateTo)
     {
         $page = 1;
-        $limit = 100;
+        $limit = 50;
         $total = 0;
 
         if ($endpoint === 'stocks') {
@@ -128,11 +109,11 @@ class DataController extends Controller
             try {
                 $response = Http::timeout(10)->get($url, $params);
             } catch (ConnectionException $e) {
-                return "{$endpoint}: прервано по таймауту (загружено {$total} записей)";
+                return "{$endpoint}: Загружено {$total} записей";
             }
 
             if ($response->failed()) {
-                return "{$endpoint}: ошибка HTTP, загружено {$total} записей";
+                return "{$endpoint}: Загружено {$total} записей";
             }
 
             $json = $response->json();
@@ -163,6 +144,6 @@ class DataController extends Controller
 
         } while (!empty($items));
 
-        return "{$endpoint}: загружено {$total} записей";
+        return "{$endpoint}: Загружено {$total} записей";
     }
 }
