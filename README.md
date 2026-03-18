@@ -6,10 +6,10 @@
 
 ## Требования
 
-- PHP >= 8.1
+- PHP 8.1+
 - Composer
-- MySQL
-- Расширения PHP: BCMath, Ctype, JSON, Mbstring, OpenSSL, PDO, Tokenizer, XML
+- MySQL 8.0+
+- Laravel 10.x
 
 ## Установка
 
