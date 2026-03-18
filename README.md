@@ -15,9 +15,24 @@
 
 1. Клонируйте репозиторий:
 
-   ```bash
-   cd <папка проекта>
-   git clone https://github.com/IlyaMayskiy/test-api-parser
+    ```bash
+    cd <папка проекта>
+    git clone https://github.com/IlyaMayskiy/test-api-parser
+
+2. Установите Composer
+
+    ```bash
+    composer install
+
+3. Запуск проекта
+
+    ```bash
+    php artisan serve
+
+4. Запуск очереди(для загрузки данных из api в бд)
+
+    ```bash
+    php artisan queue:work
 
 ## Подключение к базе данных
 
@@ -28,9 +43,14 @@
 - DB_USERNAME=theomasw_test
 - DB_PASSWORD=%*9AQyhWAnxL
 
-## Файлы с которыми работал
+- https://center.beget.com/phpMyAdmin/sql.php?server=1&db=theomasw_test&table=jobs&pos=0(phpMyAdmin)
+- Логин: theomasw_test
+- Пароль: %*9AQyhWAnxL
 
-- Http/Controllers/DataController - основной контроллер, в котором происходит вывод и обновление данных. Решил сделать все в одном контроллере, т.к. задача не большая.
+## Файлы проекта
+
+- Http/Controllers/DataController - основной контроллер, в котором происходит вывод и постановка задач в очередь.
+- Jobs/FetchEntityJob - задача для асинхронной загрузки данных из API (вызывается для каждой таблицы отдельно)
 - Модели, у всех параметры 'id', 'external_id', 'payload', 'created_at', 'updated_at'
     - Models/Income - Доходы
     - Models/Order - Заказы
@@ -45,6 +65,7 @@
     - database/migrations/create_orders_table - Создание таблицы orders
     - database/migrations/create_stocks_table - Создание таблицы stocks
     - database/migrations/create_incomes_table - Создание таблицы incomes
+    - database/migrations/_create_jobs_table - Создание таблиц для очередей (была создана автоматически)
 
 ## Заключение
 
