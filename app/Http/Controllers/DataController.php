@@ -7,38 +7,53 @@ use App\Models\Order;
 use App\Models\Stock;
 use App\Models\Income;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Http\Client\ConnectionException;
 
 class DataController extends Controller
 {
-
     public function index()
     {
         return view('data.index');
     }
 
-
     public function sales()
     {
         $items = Sale::paginate(20);
-        return view('data.sales', compact('items'));
+        return view('data.items', [
+            'entity' => 'sales',
+            'title' => 'Продажи',
+            'items' => $items
+        ]);
     }
 
     public function orders()
     {
         $items = Order::paginate(20);
-        return view('data.orders', compact('items'));
+        return view('data.items', [
+            'entity' => 'orders',
+            'title' => 'Заказы',
+            'items' => $items
+        ]);
     }
 
     public function stocks()
     {
         $items = Stock::paginate(20);
-        return view('data.stocks', compact('items'));
+        return view('data.items', [
+            'entity' => 'stocks',
+            'title' => 'Склады',
+            'items' => $items
+        ]);
     }
 
     public function incomes()
     {
         $items = Income::paginate(20);
-        return view('data.incomes', compact('items'));
+        return view('data.items', [
+            'entity' => 'incomes',
+            'title' => 'Доходы',
+            'items' => $items
+        ]);
     }
 
     public function fetch()
@@ -48,12 +63,7 @@ class DataController extends Controller
         $baseUri = "http://109.73.206.144:6969/";
         $apiKey = 'E6kUTYrYwZq2tN4QEtyzsbEBk3ie';
 
-        if (!$apiKey) {
-            return redirect()->back()->with('error', 'Не указан API ключ в .env');
-        }
-
         $messages = [];
-
         $messages[] = $this->fetchEndpoint($baseUri, $apiKey, 'sales', Sale::class, true);
         $messages[] = $this->fetchEndpoint($baseUri, $apiKey, 'orders', Order::class, true);
         $messages[] = $this->fetchEndpoint($baseUri, $apiKey, 'incomes', Income::class, true);
@@ -62,13 +72,44 @@ class DataController extends Controller
         return redirect()->back()->with('message', implode(' | ', $messages));
     }
 
+    public function fetchEntity($entity)
+    {
+        set_time_limit(300);
+
+        $baseUri = "http://109.73.206.144:6969/";
+        $apiKey = 'E6kUTYrYwZq2tN4QEtyzsbEBk3ie';
+
+        $map = [
+            'sales'   => ['model' => Sale::class,   'useDateTo' => true],
+            'orders'  => ['model' => Order::class,  'useDateTo' => true],
+            'incomes' => ['model' => Income::class, 'useDateTo' => true],
+            'stocks'  => ['model' => Stock::class,  'useDateTo' => false],
+        ];
+
+        if (!isset($map[$entity])) {
+            return redirect()->back()->with('error', 'Неизвестная сущность');
+        }
+
+        $modelClass = $map[$entity]['model'];
+        $useDateTo = $map[$entity]['useDateTo'];
+
+        $message = $this->fetchEndpoint($baseUri, $apiKey, $entity, $modelClass, $useDateTo);
+
+        return redirect()->back()->with('message', $message);
+    }
+
     private function fetchEndpoint($baseUri, $apiKey, $endpoint, $modelClass, $useDateTo)
     {
         $page = 1;
-        $limit = 500;
-        $dateFrom = now()->subDays(30)->toDateString();
-        $dateTo = now()->toDateString();
+        $limit = 100;
         $total = 0;
+
+        if ($endpoint === 'stocks') {
+            $dateFrom = now()->toDateString();
+        } else {
+            $dateFrom = now()->subDays(30)->toDateString();
+        }
+        $dateTo = now()->toDateString();
 
         do {
             $params = [
@@ -83,10 +124,15 @@ class DataController extends Controller
             }
 
             $url = rtrim($baseUri, '/') . '/api/' . $endpoint;
-            $response = Http::get($url, $params);
+
+            try {
+                $response = Http::timeout(10)->get($url, $params);
+            } catch (ConnectionException $e) {
+                return "{$endpoint}: прервано по таймауту (загружено {$total} записей)";
+            }
 
             if ($response->failed()) {
-                return "Ошибка {$endpoint}: " . $response->body();
+                return "{$endpoint}: ошибка HTTP, загружено {$total} записей";
             }
 
             $json = $response->json();

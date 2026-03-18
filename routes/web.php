@@ -1,7 +1,14 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\DataController;
 
-Route::get('/', function () {
-    return view('welcome');
-});
+Route::get('/', [DataController::class, 'index'])->name('data.index');
+
+Route::get('/fetch', [DataController::class, 'fetch'])->name('data.fetch');
+Route::get('/data/fetch/{entity}', [DataController::class, 'fetchEntity'])->whereIn('entity', ['sales', 'orders', 'stocks', 'incomes'])->name('data.fetch.entity');
+
+Route::get('/sales', [DataController::class, 'sales'])->name('data.sales');
+Route::get('/orders', [DataController::class, 'orders'])->name('data.orders');
+Route::get('/stocks', [DataController::class, 'stocks'])->name('data.stocks');
+Route::get('/incomes', [DataController::class, 'incomes'])->name('data.incomes');
