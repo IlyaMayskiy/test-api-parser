@@ -44,12 +44,18 @@
     DB_USERNAME=theomasw_test
     DB_PASSWORD=%*9AQyhWAnxL
 
-7. Запуск проекта
+7. Добавьте это в файл .env
+
+    ```php
+    API_BASE_URI=http://109.73.206.144:6969/
+    API_KEY=E6kUTYrYwZq2tN4QEtyzsbEBk3ie
+
+8. Запуск проекта
 
     ```bash
     php artisan serve
 
-8. Запуск очереди(для загрузки данных из api в бд)
+9. Запуск очереди(для загрузки данных из api в бд)
 
     ```bash
     php artisan queue:work
