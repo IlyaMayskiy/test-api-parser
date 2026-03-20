@@ -24,12 +24,32 @@
     ```bash
     composer install
 
-3. Запуск проекта
+3. Создайте файл .env
+
+   ```bash
+   cp .env.example .env
+
+5. Сгенерируйте ключ приложения
+
+   ```bash
+   php artisan key:generate
+
+6. Выполните подключение к бд:
+
+    ```php
+    DB_CONNECTION=mysql
+    DB_HOST=theomasw.beget.tech
+    DB_PORT=3306
+    DB_DATABASE=theomasw_test
+    DB_USERNAME=theomasw_test
+    DB_PASSWORD=%*9AQyhWAnxL
+
+7. Запуск проекта
 
     ```bash
     php artisan serve
 
-4. Запуск очереди(для загрузки данных из api в бд)
+8. Запуск очереди(для загрузки данных из api в бд)
 
     ```bash
     php artisan queue:work
