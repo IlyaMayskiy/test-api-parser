@@ -73,7 +73,7 @@
 **Как добавить IP:**
 1. Зайдите в панель управления Beget ([https://cp.beget.com/mysql](https://cp.beget.com/mysql)) под своей под логином 'theomasw' и паролем '%*9AQyhWAnxL'
 2. В Базы данных и доступы найдите theomasw_test
-3. Нажмите на '+' возде theomasw_test и добавьте свой ip и пароль %*9AQyhWAnxL
+3. Нажмите на '+' возле theomasw_test и добавьте свой ip и пароль %*9AQyhWAnxL
 После добавления IP подключение должно заработать.
 
 ## Заключение
